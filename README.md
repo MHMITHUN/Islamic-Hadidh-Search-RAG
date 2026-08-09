@@ -1,69 +1,104 @@
-# Islamic Hadith Search RAG
+# SohihFinder — Hadith Search & Verify Platform
 
-A Retrieval-Augmented Generation (RAG) based search tool for Islamic Hadiths. This project indexes hadith collections and provides semantic search with LLM-powered answers grounded in retrieved hadiths.
+A free, open-source full-stack hadith search, browse, and verification platform. No paid AI APIs
+required — all data comes from open-source hadith datasets, and the app runs entirely on free tiers.
 
 ## Features
 
-- Ingests hadith collections (JSON) into an in-memory vector index
-- Semantic search over hadith texts using TF-IDF + cosine similarity
-- RAG-style answer generation by prompting an LLM with retrieved context
-- Minimal dependencies (pure Python for indexing, optional OpenAI-compatible client)
+- Search 36,000+ hadiths from 7 major collections (Bukhari, Muslim, Abu Dawud, Tirmidhi, Nasai, Ibn Majah, Malik)
+- Browse collections and filter by scholarly grade (Sahih / Hasan / Da'if / Mawdu)
+- "Verify" page: paste a hadith claim and see the closest matching hadiths with their existing grades
+- Color-coded grade badges and reference links to Sunnah.com
+- Mobile-first, mosque-inspired design with Arabic RTL and Bangla font support
+
+## Tech Stack
+
+| Layer | Tool |
+|---|---|
+| Frontend | React (Vite) |
+| Backend | Node.js + Express |
+| Database | MongoDB Atlas (M0 free tier) — optional; falls back to in-memory store |
+| Search | Fuse.js fuzzy search + MongoDB text index |
+| Hosting | Vercel (frontend) / Render or Railway (backend) |
+
+No OpenAI / Claude / Gemini API keys. No credit card. No cost.
 
 ## Project Structure
 
 ```
-.
-├── data/
-│   └── hadiths.json          # Sample hadith dataset
-├── hadith_search/
-│   ├── __init__.py
-│   ├── indexer.py            # Vector index building
-│   ├── retriever.py          # Semantic search retrieval
-│   ├── rag.py                # RAG answer generation
-│   └── utils.py              # Shared helpers
-├── cli.py                    # Command line interface
-├── requirements.txt
+├── backend/
+│   ├── models/Hadith.js          # Mongoose schema
+│   ├── routes/                   # hadiths, search, collections
+│   ├── store/memoryStore.js      # In-memory store (no DB required)
+│   ├── scripts/importDataset.js  # Import hadith data into MongoDB
+│   ├── server.js
+│   └── .env.example
+├── frontend/
+│   ├── src/pages/                # Home, Browse, Search, Detail, Verify, About
+│   ├── src/components/           # HadithCard, SearchBar, grade helpers
+│   ├── src/api/client.js         # API helper (uses /api reverse proxy)
+│   └── vite.config.js            # /api proxy to backend, allowedHosts
 └── README.md
 ```
 
-## Installation
+## Quick Start
+
+### 1. Backend
 
 ```bash
-pip install -r requirements.txt
+cd backend
+cp .env.example .env   # set MONGODB_URI (optional)
+npm install
+npm run dev            # starts on http://localhost:5000
 ```
 
-## Usage
+Without a MongoDB URI, the backend automatically loads 7 collections from the jsDelivr CDN into an
+in-memory store (36,000+ hadiths). For production, set `MONGODB_URI` and unset `SKIP_MONGO`.
 
-### Ingest and search
+### 2. Frontend
 
 ```bash
-python cli.py search --query "intention in actions"
+cd frontend
+npm install
+npm run dev            # starts on http://localhost:5173
 ```
 
-### RAG answer generation
+The Vite dev server proxies `/api` requests to the backend, so there are no CORS issues in preview.
+
+### 3. Import data into MongoDB (production)
 
 ```bash
-export USER_LLM_API_KEY=your-api-key-here
-export USER_LLM_BASE_URL=https://api.openai.com/v1
-export USER_LLM_MODEL=gpt-4o-mini
-
-python cli.py ask --query "What is the importance of intention?"
+cd backend
+export MONGODB_URI="mongodb+srv://..."
+npm run import          # downloads eng+ara editions and upserts into MongoDB
 ```
 
-## Adding Hadith Data
+## API Endpoints
 
-Drop your hadith JSON files into `data/`. Expected format:
-
-```json
-[
-  {
-    "id": "bukhari-1",
-    "collection": "Sahih Bukhari",
-    "text": "Actions are judged by intentions...",
-    "narrator": "Umar ibn al-Khattab"
-  }
-]
 ```
+GET /api/hadiths                    List/paginate (query: collection, book, page, limit)
+GET /api/hadiths/:id                Single hadith detail
+GET /api/search?q=keyword           Full-text + fuzzy search
+GET /api/search/verify?text=...     Closest matching hadiths with grades
+GET /api/collections                All book collections
+GET /api/collections/:grade         Filter by grade (Sahih, Hasan, Da'if, Mawdu)
+GET /api/health                     Health check
+```
+
+## Data Sources
+
+- **fawazahmed0/hadith-api** — open-source static JSON API served from jsDelivr CDN (used for the
+  in-memory store and import script)
+- **AhmedBaset/hadith-json** — offline-capable dataset for importing into your own MongoDB instance
+
+Grades shown come from established scholarly works (Al-Albani, Shuaib Al-Arnaut, collection
+editors) already present in the source data.
+
+## Disclaimer
+
+This platform displays grades that already exist in the source datasets. It does not issue religious
+rulings or automated authenticity judgments. All religious decisions should be made with qualified
+scholars.
 
 ## License
 

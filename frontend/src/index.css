@@ -1,0 +1,520 @@
+:root {
+  --deep-green: #0b3d2e;
+  --green-600: #14532d;
+  --green-500: #166534;
+  --gold: #c9a227;
+  --gold-light: #e6c766;
+  --cream: #faf7f0;
+  --sand: #f0e9d8;
+  --ink: #1f2937;
+  --ink-light: #4b5563;
+  --white: #ffffff;
+  --border: #d8d0bc;
+  --danger: #b91c1c;
+  --radius: 10px;
+  --shadow: 0 2px 8px rgba(11, 61, 46, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Noto Sans Bengali", "Noto Sans", "Segoe UI", system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--cream);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--green-600);
+  text-decoration: none;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: linear-gradient(135deg, var(--deep-green), var(--green-600));
+  color: var(--white);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand {
+  color: var(--white);
+  font-size: 1.35rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-icon {
+  color: var(--gold-light);
+  font-size: 1.4rem;
+}
+
+.nav {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.85);
+  padding: 6px 14px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--white);
+}
+
+.nav-link.active {
+  background: var(--gold);
+  color: var(--deep-green);
+  font-weight: 600;
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 40px;
+}
+
+.footer {
+  background: var(--deep-green);
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding: 20px;
+  font-size: 0.9rem;
+}
+
+.footer p {
+  margin: 0;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.page h1 {
+  color: var(--deep-green);
+  margin-bottom: 8px;
+}
+
+.muted {
+  color: var(--ink-light);
+}
+
+.error {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* Hero */
+.hero {
+  text-align: center;
+  padding: 48px 16px;
+}
+
+.hero h1 {
+  font-size: 2.2rem;
+  margin: 0 0 10px;
+}
+
+.hero-sub {
+  color: var(--ink-light);
+  font-size: 1.1rem;
+  max-width: 640px;
+  margin: 0 auto 24px;
+}
+
+.hero-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: filter 0.2s;
+}
+
+.btn-primary {
+  background: var(--green-600);
+  color: var(--white);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--green-600);
+  color: var(--green-600);
+  font-weight: 600;
+}
+
+.btn-outline:hover {
+  background: var(--green-600);
+  color: var(--white);
+}
+
+.btn-link {
+  background: var(--sand);
+  border: 1px solid var(--border);
+  color: var(--green-600);
+}
+
+/* Search bar */
+.searchbar {
+  display: flex;
+  gap: 8px;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.searchbar input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+}
+
+.searchbar input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.searchbar button {
+  padding: 12px 22px;
+  background: var(--gold);
+  color: var(--deep-green);
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Featured / sections */
+.featured,
+.how-it-works {
+  margin-top: 40px;
+}
+
+.featured h2,
+.how-it-works h2 {
+  color: var(--deep-green);
+}
+
+.featured-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-left: 6px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  box-shadow: var(--shadow);
+}
+
+.featured-text {
+  font-size: 1.1rem;
+  margin: 0 0 8px;
+}
+
+.featured-meta {
+  color: var(--ink-light);
+  margin: 0;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.step {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+.step h3 {
+  color: var(--green-600);
+  margin: 0 0 6px;
+}
+
+.step p {
+  margin: 0;
+  color: var(--ink-light);
+}
+
+/* Grid / collections */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.collection-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: block;
+  color: var(--ink);
+}
+
+.collection-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(11, 61, 46, 0.18);
+}
+
+.collection-card h2 {
+  color: var(--deep-green);
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+}
+
+.collection-key {
+  color: var(--ink-light);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.badge-offline {
+  display: inline-block;
+  margin-top: 8px;
+  background: var(--sand);
+  border: 1px solid var(--border);
+  color: var(--ink-light);
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+
+/* Results */
+.result-list {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hadith-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  box-shadow: var(--shadow);
+  display: block;
+  color: var(--ink);
+  transition: box-shadow 0.15s;
+}
+
+.hadith-card:hover {
+  box-shadow: 0 4px 14px rgba(11, 61, 46, 0.2);
+}
+
+.hadith-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.hadith-ref {
+  font-weight: 700;
+  color: var(--green-600);
+  font-size: 0.9rem;
+}
+
+.hadith-text {
+  margin: 0 0 6px;
+}
+
+.hadith-narrator {
+  margin: 0;
+  color: var(--ink-light);
+  font-size: 0.9rem;
+}
+
+/* Grade badges */
+.grade-badge {
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--white);
+  white-space: nowrap;
+}
+
+.grade-sahih {
+  background: #15803d;
+}
+
+.grade-hasan {
+  background: #ca8a04;
+  color: #1f2937;
+}
+
+.grade-daiif {
+  background: #ea580c;
+}
+
+.grade-mawdu {
+  background: #b91c1c;
+}
+
+.grade-other {
+  background: #6b7280;
+}
+
+/* Verify */
+.verify-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.verify-form textarea {
+  padding: 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.verify-form textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.disclaimer-box {
+  background: var(--sand);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  color: var(--ink-light);
+  font-size: 0.95rem;
+  margin-bottom: 16px;
+}
+
+/* Detail */
+.detail-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow);
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.detail-chapter {
+  color: var(--ink-light);
+  font-style: italic;
+  margin: 4px 0 12px;
+}
+
+.detail-text {
+  font-size: 1.15rem;
+  line-height: 1.8;
+}
+
+.detail-narrator {
+  color: var(--ink-light);
+}
+
+.detail-links {
+  margin-top: 16px;
+}
+
+/* About */
+.about-section {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.about-section h2 {
+  color: var(--deep-green);
+  margin-top: 0;
+}
+
+.about-section ul {
+  padding-left: 20px;
+}
+
+@media (max-width: 640px) {
+  .hero h1 {
+    font-size: 1.6rem;
+  }
+
+  .header-inner {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .searchbar {
+    flex-direction: column;
+  }
+}
+
+/* Arabic RTL text support */
+.arabic-text {
+  direction: rtl;
+  text-align: right;
+  font-size: 1.3rem;
+  line-height: 2;
+}
