@@ -1,0 +1,32 @@
+[
+  {
+    "id": "bukhari-1",
+    "collection": "Sahih Bukhari",
+    "text": "Actions are (judged) by motives (niyyah), so each man will have what he intended.",
+    "narrator": "Umar ibn al-Khattab"
+  },
+  {
+    "id": "muslim-1",
+    "collection": "Sahih Muslim",
+    "text": "The best among you are those who learn the Quran and teach it.",
+    "narrator": "Uthman ibn Affan"
+  },
+  {
+    "id": "bukhari-2",
+    "collection": "Sahih Bukhari",
+    "text": "He who believes in Allah and the Last Day should speak a good word or remain silent.",
+    "narrator": "Abu Huraira"
+  },
+  {
+    "id": "tirmidhi-1",
+    "collection": "Jami at-Tirmidhi",
+    "text": "The most perfect believer in faith is the one who is best in moral conduct.",
+    "narrator": "Abu Huraira"
+  },
+  {
+    "id": "abudawud-1",
+    "collection": "Sunan Abi Dawud",
+    "text": "Seeking knowledge is an obligation upon every Muslim.",
+    "narrator": "Anas ibn Malik"
+  }
+]
