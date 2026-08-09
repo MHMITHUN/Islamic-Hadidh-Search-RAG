@@ -73,11 +73,23 @@ export MONGODB_URI="mongodb+srv://..."
 npm run import          # downloads eng+ara editions and upserts into MongoDB
 ```
 
+This imports 7 collections (36,390 hadiths) with both Arabic and English text. Run it once; the
+server will then serve everything from MongoDB.
+
+### 4. Backend with MongoDB (production)
+
+```bash
+cd backend
+node server.js          # uses MONGODB_URI from .env; falls back to in-memory store if absent
+```
+
 ## API Endpoints
 
 ```
-GET /api/hadiths                    List/paginate (query: collection, book, page, limit)
-GET /api/hadiths/:id                Single hadith detail
+GET /api/hadiths                    List/paginate (query: collection, book, grade, page, limit)
+GET /api/hadiths/:id                Single hadith detail (e.g. bukhari-1, includes Arabic + English)
+GET /api/hadiths/random             Random hadith
+GET /api/hadiths/stats              Total hadiths + grade distribution
 GET /api/search?q=keyword           Full-text + fuzzy search
 GET /api/search/verify?text=...     Closest matching hadiths with grades
 GET /api/collections                All book collections

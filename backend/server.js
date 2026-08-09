@@ -12,6 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 const USE_MONGO = process.env.MONGODB_URI && !process.env.SKIP_MONGO;
+if (USE_MONGO) process.env.USE_MONGO = "1";
 
 app.use("/api/hadiths", hadithsRouter);
 app.use("/api/search", searchRouter);

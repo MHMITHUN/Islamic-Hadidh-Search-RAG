@@ -44,17 +44,21 @@ export async function loadCollections(collections = Object.keys(EDITION_NAMES)) 
   for (const key of collections) {
     if (loadedCollections.has(key)) continue;
     try {
-      const url = `${CDN}/eng-${key}.json`;
-      const res = await fetch(url);
-      if (!res.ok) {
-        console.warn(`[store] skip ${key}: HTTP ${res.status}`);
+      const [engRes, araRes] = await Promise.all([
+        fetch(`${CDN}/eng-${key}.json`),
+        fetch(`${CDN}/ara-${key}.json`),
+      ]);
+      if (!engRes.ok) {
+        console.warn(`[store] skip ${key}: eng HTTP ${engRes.status}`);
         continue;
       }
-      const data = await res.json();
-      const { name, sections } = data.metadata || {};
-      const items = data.hadiths || [];
+      const [engData, araData] = await Promise.all([engRes.json(), araRes.json()]);
+      const { sections } = engData.metadata || {};
+      const engItems = engData.hadiths || [];
+      const araItems = araData.hadiths || [];
+      const araByNumber = new Map(araItems.map((h) => [h.hadithnumber, h.text]));
 
-      for (const h of items) {
+      for (const h of engItems) {
         const gradeEntry = h.grades && h.grades[0];
         const refBook = h.reference ? h.reference.book : null;
         const refHadith = h.reference ? h.reference.hadith : h.hadithnumber;
@@ -63,7 +67,7 @@ export async function loadCollections(collections = Object.keys(EDITION_NAMES)) 
           collection: key,
           book_number: refBook,
           hadith_number: h.hadithnumber,
-          arabic_text: "",
+          arabic_text: araByNumber.get(h.hadithnumber) || "",
           english_text: h.text || "",
           bangla_text: "",
           narrator: extractNarrator(h.text),
@@ -75,7 +79,7 @@ export async function loadCollections(collections = Object.keys(EDITION_NAMES)) 
         });
       }
       loadedCollections.add(key);
-      console.log(`[store] loaded ${key}: ${items.length} hadiths`);
+      console.log(`[store] loaded ${key}: ${engItems.length} hadiths`);
     } catch (err) {
       console.error(`[store] failed to load ${key}:`, err.message);
     }

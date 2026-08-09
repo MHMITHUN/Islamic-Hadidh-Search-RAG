@@ -1,6 +1,7 @@
 import { Router } from "express";
 import Hadith from "../models/Hadith.js";
 import { getStore } from "../store/memoryStore.js";
+import { serializeHadith, serializeMany } from "../store/serialize.js";
 
 const router = Router();
 
@@ -23,7 +24,7 @@ router.get("/", async (req, res, next) => {
 
     let results;
     if (process.env.USE_MONGO === "1") {
-      results = await searchMongo(q, limit);
+      results = serializeMany(await searchMongo(q, limit));
     } else {
       results = searchMemory(q, limit);
     }
@@ -41,7 +42,7 @@ router.get("/verify", async (req, res, next) => {
     let matches;
     if (process.env.USE_MONGO === "1") {
       const words = text.trim().split(/\s+/).slice(0, 12).join(" ");
-      matches = await searchMongo(words, limit);
+      matches = serializeMany(await searchMongo(words, limit));
     } else {
       matches = searchMemory(text, limit);
     }

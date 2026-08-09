@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar.jsx";
+import HadithCard from "../components/HadithCard.jsx";
 
 export default function Home() {
   const navigate = useNavigate();
-  const [featured, setFeatured] = useState(null);
+  const [random, setRandom] = useState(null);
+  const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    fetch("/api/search?q=intention%20sincerity&limit=1")
+    fetch("/api/hadiths/random")
       .then((r) => r.json())
-      .then((d) => setFeatured(d.results && d.results[0]))
+      .then(setRandom)
+      .catch(() => {});
+    fetch("/api/hadiths/stats")
+      .then((r) => r.json())
+      .then(setStats)
       .catch(() => {});
   }, []);
 
@@ -17,12 +23,15 @@ export default function Home() {
     if (q) navigate(`/search?q=${encodeURIComponent(q)}`);
   }
 
+  const gradeOrder = ["Sahih", "Hasan", "Da'if", "Mawdu", "Other", "None"];
+
   return (
     <div className="home">
       <section className="hero">
         <h1>Search, Browse & Verify Hadiths</h1>
         <p className="hero-sub">
           A free, open-source reference for finding hadiths and checking their scholarly grades.
+          No paid APIs. No accounts.
         </p>
         <SearchBar onSearch={onSearch} placeholder="e.g. intention, fasting, prayer..." />
         <div className="hero-actions">
@@ -31,16 +40,32 @@ export default function Home() {
         </div>
       </section>
 
-      {featured && (
-        <section className="featured">
-          <h2>Featured Hadith</h2>
-          <div className="featured-card">
-            <p className="featured-text">{featured.english_text}</p>
-            <p className="featured-meta">
-              {featured.collection} #{featured.hadith_number}
-              {featured.grade ? ` · Grade: ${featured.grade}` : ""}
-            </p>
+      {stats && (
+        <section className="stats">
+          <div className="stat-block">
+            <span className="stat-number">{stats.total.toLocaleString()}</span>
+            <span className="stat-label">Hadiths Indexed</span>
           </div>
+          <div className="stat-block">
+            <span className="stat-number">7</span>
+            <span className="stat-label">Collections</span>
+          </div>
+          <div className="grade-summary">
+            {gradeOrder
+              .filter((g) => stats.grades[g] > 0)
+              .map((g) => (
+                <span key={g} className="grade-chip">
+                  {g}: {stats.grades[g].toLocaleString()}
+                </span>
+              ))}
+          </div>
+        </section>
+      )}
+
+      {random && (
+        <section className="featured">
+          <h2>Random Hadith</h2>
+          <HadithCard hadith={random} />
         </section>
       )}
 
