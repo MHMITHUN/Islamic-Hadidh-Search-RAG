@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Search, BookOpen, ShieldCheck, Sparkles } from "lucide-react";
 import SearchBar from "../components/SearchBar.jsx";
 import HadithCard from "../components/HadithCard.jsx";
 
@@ -25,6 +26,12 @@ export default function Home() {
 
   const gradeOrder = ["Sahih", "Hasan", "Da'if", "Mawdu", "Other", "None"];
 
+  const steps = [
+    { icon: Search, title: "Search", desc: "Search 36,000+ hadiths from 10 collections by keyword." },
+    { icon: BookOpen, title: "Browse", desc: "Explore collections like Bukhari, Muslim, and Abu Dawud." },
+    { icon: ShieldCheck, title: "Verify", desc: "Paste a claim and see matching hadiths with existing grades." },
+  ];
+
   return (
     <div className="home">
       <section className="hero">
@@ -33,7 +40,7 @@ export default function Home() {
           A free, open-source reference for finding hadiths and checking their scholarly grades.
           No paid APIs. No accounts.
         </p>
-        <SearchBar onSearch={onSearch} placeholder="e.g. intention, fasting, prayer..." />
+        <SearchBar onSearch={onSearch} placeholder="e.g. intention, fasting, prayer..." large />
         <div className="hero-actions">
           <a href="/browse" className="btn btn-outline">Browse Collections</a>
           <a href="/verify" className="btn btn-outline">Verify a Hadith</a>
@@ -47,7 +54,7 @@ export default function Home() {
             <span className="stat-label">Hadiths Indexed</span>
           </div>
           <div className="stat-block">
-            <span className="stat-number">7</span>
+            <span className="stat-number">10</span>
             <span className="stat-label">Collections</span>
           </div>
           <div className="grade-summary">
@@ -64,7 +71,7 @@ export default function Home() {
 
       {random && (
         <section className="featured">
-          <h2>Random Hadith</h2>
+          <h2><Sparkles size={18} style={{ verticalAlign: "-3px" }} /> Random Hadith</h2>
           <HadithCard hadith={random} />
         </section>
       )}
@@ -72,18 +79,15 @@ export default function Home() {
       <section className="how-it-works">
         <h2>How it works</h2>
         <div className="steps">
-          <div className="step">
-            <h3>Search</h3>
-            <p>Search 36,000+ hadiths from 7 major collections by keyword.</p>
-          </div>
-          <div className="step">
-            <h3>Browse</h3>
-            <p>Explore collections like Bukhari, Muslim, and Abu Dawud.</p>
-          </div>
-          <div className="step">
-            <h3>Verify</h3>
-            <p>Paste a claim and see matching hadiths with their existing grades.</p>
-          </div>
+          {steps.map(({ icon: Icon, title, desc }) => (
+            <div className="step" key={title}>
+              <h3>
+                <span className="step-icon"><Icon size={17} /></span>
+                {title}
+              </h3>
+              <p>{desc}</p>
+            </div>
+          ))}
         </div>
       </section>
     </div>

@@ -1,14 +1,18 @@
 import Fuse from "fuse.js";
+import { extractKeywords } from "./keywords.js";
 
 const CDN = "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions";
 
 const EDITION_NAMES = {
   abudawud: "Sunan Abu Dawud",
   bukhari: "Sahih al Bukhari",
+  dehlawi: "Forty Hadith of Shah Waliullah Dehlawi",
   ibnmajah: "Sunan Ibn Majah",
   malik: "Muwatta Malik",
   muslim: "Sahih Muslim",
   nasai: "Sunan an Nasai",
+  nawawi: "Forty Hadith of an-Nawawi",
+  qudsi: "Forty Hadith Qudsi",
   tirmidhi: "Jami At Tirmidhi",
 };
 
@@ -29,12 +33,12 @@ function normalizeGrade(raw) {
 function buildFuse() {
   fuse = new Fuse(hadiths, {
     keys: [
-      { name: "english_text", weight: 0.6 },
-      { name: "keywords", weight: 0.3 },
+      { name: "keywords", weight: 0.45 },
+      { name: "english_text", weight: 0.4 },
       { name: "narrator", weight: 0.1 },
       { name: "id", weight: 0.05 },
     ],
-    threshold: 0.4,
+    threshold: 0.35,
     ignoreLocation: true,
     minMatchCharLength: 3,
   });
@@ -44,18 +48,26 @@ export async function loadCollections(collections = Object.keys(EDITION_NAMES)) 
   for (const key of collections) {
     if (loadedCollections.has(key)) continue;
     try {
-      const [engRes, araRes] = await Promise.all([
-        fetch(`${CDN}/eng-${key}.json`),
-        fetch(`${CDN}/ara-${key}.json`),
-      ]);
+      const engRes = await fetch(`${CDN}/eng-${key}.json`);
       if (!engRes.ok) {
         console.warn(`[store] skip ${key}: eng HTTP ${engRes.status}`);
         continue;
       }
-      const [engData, araData] = await Promise.all([engRes.json(), araRes.json()]);
+      const engData = await engRes.json();
+
+      let araItems = [];
+      try {
+        const araRes = await fetch(`${CDN}/ara-${key}.json`);
+        if (araRes.ok) {
+          const araData = await araRes.json();
+          araItems = araData.hadiths || [];
+        }
+      } catch {
+        /* arabic edition not available */
+      }
+
       const { sections } = engData.metadata || {};
       const engItems = engData.hadiths || [];
-      const araItems = araData.hadiths || [];
       const araByNumber = new Map(araItems.map((h) => [h.hadithnumber, h.text]));
 
       for (const h of engItems) {
@@ -91,20 +103,6 @@ export async function loadCollections(collections = Object.keys(EDITION_NAMES)) 
 function extractNarrator(text) {
   const m = String(text || "").match(/^Narrated\s+([^:]+):/i);
   return m ? m[1].trim() : "";
-}
-
-function extractKeywords(text) {
-  const stop = new Set([
-    "a", "an", "the", "and", "or", "but", "if", "of", "to", "in", "on",
-    "for", "with", "by", "is", "are", "was", "were", "be", "been", "has",
-    "have", "had", "will", "would", "shall", "should", "may", "might", "not",
-  ]);
-  const words = String(text || "")
-    .toLowerCase()
-    .replace(/[^a-z\s]/g, " ")
-    .split(/\s+/)
-    .filter((w) => w.length > 3 && !stop.has(w));
-  return [...new Set(words)].slice(0, 20);
 }
 
 export function getStore() {

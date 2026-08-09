@@ -1,34 +1,53 @@
 import { Router } from "express";
-import Hadith from "../models/Hadith.js";
 import { getStore } from "../store/memoryStore.js";
-import { serializeHadith, serializeMany } from "../store/serialize.js";
+import { scoreHadith, compareHadiths } from "../store/rank.js";
 
 const router = Router();
 
-function searchMongo(q, limit = 20) {
-  return Hadith.find({ $text: { $search: q } })
-    .limit(Number(limit))
-    .exec();
-}
-
-function searchMemory(q, limit = 20) {
-  const { fuse } = getStore();
+function searchMemory(q, limit = 20, filters = {}) {
+  const { fuse, hadiths } = getStore();
   if (!fuse) return [];
-  return fuse.search(q).slice(0, Number(limit)).map((r) => r.item);
+
+  const fuseHits = fuse.search(q).map((r) => r.item);
+  let scored = fuseHits.map((h) => ({ h, ...h, ...scoreHadith(h, q) }));
+
+  const good = scored.filter((s) => s.score > 0);
+  const fuzzy = scored.filter((s) => s.score <= 0);
+  const sortedGood = good
+    .slice()
+    .sort((a, b) => compareHadiths(a, b, q))
+    .map((s) => s.h);
+  const results = [...sortedGood, ...fuzzy.map((s) => s.h)];
+
+  if (filters.collection) results = results.filter((h) => h.collection === filters.collection);
+  if (filters.grade) results = results.filter((h) => h.grade && h.grade.toLowerCase().startsWith(filters.grade.toLowerCase()));
+  return results.slice(0, Number(limit));
 }
 
 router.get("/", async (req, res, next) => {
   try {
-    const { q, lang = "en", limit = 20 } = req.query;
+    const { q, lang = "en", limit = 20, collection, grade } = req.query;
     if (!q || !q.trim()) return res.status(400).json({ error: "Missing query param q" });
 
-    let results;
-    if (process.env.USE_MONGO === "1") {
-      results = serializeMany(await searchMongo(q, limit));
-    } else {
-      results = searchMemory(q, limit);
-    }
+    const results = searchMemory(q, limit, { collection, grade });
     res.json({ query: q, count: results.length, results });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get("/suggest", async (req, res, next) => {
+  try {
+    const { q, limit = 8 } = req.query;
+    if (!q || !q.trim()) return res.json({ suggestions: [] });
+    const results = searchMemory(q, limit);
+    const suggestions = results.map((h) => ({
+      id: h.id,
+      text: h.english_text.slice(0, 120),
+      collection: h.collection,
+      hadith_number: h.hadith_number,
+    }));
+    res.json({ suggestions });
   } catch (err) {
     next(err);
   }
@@ -39,14 +58,7 @@ router.get("/verify", async (req, res, next) => {
     const { text, limit = 5 } = req.query;
     if (!text || !text.trim()) return res.status(400).json({ error: "Missing query param text" });
 
-    let matches;
-    if (process.env.USE_MONGO === "1") {
-      const words = text.trim().split(/\s+/).slice(0, 12).join(" ");
-      matches = serializeMany(await searchMongo(words, limit));
-    } else {
-      matches = searchMemory(text, limit);
-    }
-
+    const matches = searchMemory(text, limit);
     res.json({
       disclaimer:
         "This is a data lookup against existing scholarly grades only. It does not issue religious rulings.",

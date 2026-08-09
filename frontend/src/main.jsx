@@ -10,6 +10,7 @@ import SearchResults from "./pages/SearchResults.jsx";
 import HadithDetail from "./pages/HadithDetail.jsx";
 import Verify from "./pages/Verify.jsx";
 import About from "./pages/About.jsx";
+import BookmarksPage from "./pages/BookmarksPage.jsx";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -25,6 +26,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           <Route path="hadith/:id" element={<HadithDetail />} />
           <Route path="verify" element={<Verify />} />
           <Route path="about" element={<About />} />
+          <Route path="bookmarks" element={<BookmarksPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

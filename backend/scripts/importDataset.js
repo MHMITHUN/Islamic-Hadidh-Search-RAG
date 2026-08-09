@@ -1,16 +1,20 @@
 import "dotenv/config";
 import mongoose from "mongoose";
 import Hadith from "../models/Hadith.js";
+import { extractKeywords } from "../store/keywords.js";
 
 const CDN = "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions";
 
 const EDITION_NAMES = {
   abudawud: "Sunan Abu Dawud",
   bukhari: "Sahih al Bukhari",
+  dehlawi: "Forty Hadith of Shah Waliullah Dehlawi",
   ibnmajah: "Sunan Ibn Majah",
   malik: "Muwatta Malik",
   muslim: "Sahih Muslim",
   nasai: "Sunan an Nasai",
+  nawawi: "Forty Hadith of an-Nawawi",
+  qudsi: "Forty Hadith Qudsi",
   tirmidhi: "Jami At Tirmidhi",
 };
 
@@ -34,20 +38,6 @@ function extractNarrator(text) {
   return m ? m[1].trim() : "";
 }
 
-function extractKeywords(text) {
-  const stop = new Set([
-    "a", "an", "the", "and", "or", "but", "if", "of", "to", "in", "on",
-    "for", "with", "by", "is", "are", "was", "were", "be", "been", "has",
-    "have", "had", "will", "would", "shall", "should", "may", "might", "not",
-  ]);
-  const words = String(text || "")
-    .toLowerCase()
-    .replace(/[^a-z\s]/g, " ")
-    .split(/\s+/)
-    .filter((w) => w.length > 3 && !stop.has(w));
-  return [...new Set(words)].slice(0, 20);
-}
-
 async function fetchEdition(lang, key) {
   const url = `${CDN}/${lang}-${key}.json`;
   const res = await fetch(url);
@@ -59,7 +49,7 @@ async function importCollection(key) {
   console.log(`[import] ${key}: fetching eng + ara...`);
   const [eng, ara] = await Promise.all([
     fetchEdition("eng", key),
-    fetchEdition("ara", key),
+    fetchEdition("ara", key).catch(() => null),
   ]);
 
   const sections = eng.metadata ? eng.metadata.sections : {};
@@ -67,7 +57,7 @@ async function importCollection(key) {
     (eng.hadiths || []).map((h) => [h.hadithnumber, h])
   );
   const araByNumber = new Map(
-    (ara.hadiths || []).map((h) => [h.hadithnumber, h])
+    (ara && ara.hadiths ? ara.hadiths : []).map((h) => [h.hadithnumber, h])
   );
 
   const numbers = new Set([...engByNumber.keys(), ...araByNumber.keys()]);

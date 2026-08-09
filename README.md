@@ -5,11 +5,13 @@ required — all data comes from open-source hadith datasets, and the app runs e
 
 ## Features
 
-- Search 36,000+ hadiths from 7 major collections (Bukhari, Muslim, Abu Dawud, Tirmidhi, Nasai, Ibn Majah, Malik)
-- Browse collections and filter by scholarly grade (Sahih / Hasan / Da'if / Mawdu)
+- Search 36,500+ hadiths from 10 collections (Bukhari, Muslim, Abu Dawud, Tirmidhi, Nasai, Ibn Majah, Malik, Nawawi 40, Qudsi 40, Dehlawi 40)
+- Intelligent fuzzy search with synonym matching (intention→niyyah, prayer→salah, etc.) and live suggestions
+- Browse collections with book filter and pagination, or browse by grade (Sahih / Hasan / Da'if / Mawdu)
 - "Verify" page: paste a hadith claim and see the closest matching hadiths with their existing grades
+- Arabic RTL text, copy buttons, and bookmark/save hadiths in your browser
+- Dark/light theme, mobile-first responsive design with animations
 - Color-coded grade badges and reference links to Sunnah.com
-- Mobile-first, mosque-inspired design with Arabic RTL and Bangla font support
 
 ## Tech Stack
 
@@ -73,7 +75,7 @@ export MONGODB_URI="mongodb+srv://..."
 npm run import          # downloads eng+ara editions and upserts into MongoDB
 ```
 
-This imports 7 collections (36,390 hadiths) with both Arabic and English text. Run it once; the
+This imports 10 collections (36,500+ hadiths) with both Arabic and English text. Run it once; the
 server will then serve everything from MongoDB.
 
 ### 4. Backend with MongoDB (production)
@@ -90,7 +92,8 @@ GET /api/hadiths                    List/paginate (query: collection, book, grad
 GET /api/hadiths/:id                Single hadith detail (e.g. bukhari-1, includes Arabic + English)
 GET /api/hadiths/random             Random hadith
 GET /api/hadiths/stats              Total hadiths + grade distribution
-GET /api/search?q=keyword           Full-text + fuzzy search
+GET /api/search?q=keyword           Full-text + fuzzy search (collection & grade filters)
+GET /api/search/suggest?q=...       Live search suggestions
 GET /api/search/verify?text=...     Closest matching hadiths with grades
 GET /api/collections                All book collections
 GET /api/collections/:grade         Filter by grade (Sahih, Hasan, Da'if, Mawdu)

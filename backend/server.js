@@ -30,10 +30,9 @@ app.use((err, req, res, _next) => {
 const PORT = process.env.PORT || 5000;
 
 async function start() {
+  await loadCollections();
   if (USE_MONGO) {
     await connectDB(process.env.MONGODB_URI);
-  } else {
-    await loadCollections();
   }
   app.listen(PORT, () => {
     console.log(`[server] listening on http://localhost:${PORT} (store: ${USE_MONGO ? "mongo" : "memory"})`);
